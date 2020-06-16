@@ -1,0 +1,82 @@
+import {
+  FileBrowser,
+  FileBrowserModel,
+  IFileBrowserFactory
+} from '@jupyterlab/filebrowser';
+
+import {
+  JupyterFrontEnd, JupyterFrontEndPlugin
+} from '@jupyterlab/application';
+
+import { toArray } from '@phosphor/algorithm';
+import '../style/index.css'
+
+export const shareFile: JupyterFrontEndPlugin<void> = {
+  activate: activateShareFile,
+  id: '@adyne/filebrowser-extension:share-file',
+  requires: [IFileBrowserFactory],
+  autoStart: true
+};
+
+export const dog = FileBrowser;
+export const cat = FileBrowserModel;
+
+function activateShareFile(
+  app: JupyterFrontEnd,
+  factory: IFileBrowserFactory
+): void {
+  const { commands } = app;
+  const { tracker } = factory;
+
+  commands.addCommand('filebrowser:share-main', {
+    execute: () => {
+      const widget = tracker.currentWidget;
+      if (!widget) {
+        return;
+      }
+      const path = encodeURI(widget.selectedItems().next().path);
+      console.log(`this is the path...${path}`);
+      // Do something with path.
+    },
+    isVisible: () =>
+      tracker.currentWidget &&
+      toArray(tracker.currentWidget.selectedItems()).length === 1,
+    iconClass: 'jp-MaterialIcon jp-LinkIcon',
+    label: 'Generate Appmode Link'
+  });
+}
+
+
+const selectorNotDir = '.jp-DirListing-item[data-isdir="false"]';
+
+const extension: JupyterFrontEndPlugin<void> = {
+  id: 'commands',
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    const { commands } = app;
+    const command = 'gen-appmode-link';
+
+    // Add a command
+    commands.addCommand(command, {
+      label: 'Generate Appmode Link',
+      caption: 'Generate Appmode Link',
+      iconClass: 'jp-MaterialIcon jp-FileIcon',
+      execute: (args: any) => {
+        const url = commands.execute('filebrowser:share-main');
+        const orig = args['origin'];
+        console.log(`Gen Appmode Command has been called from ${orig}.`);
+        if (orig !== 'init') {
+          window.alert(`Gen Appmode ${url}.`);
+        }
+      }
+    });
+
+    app.contextMenu.addItem({
+       command: 'gen-appmode-link',
+       selector: selectorNotDir,
+       rank: 17
+    });
+  }
+};
+
+export default extension;

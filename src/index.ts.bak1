@@ -1,0 +1,118 @@
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+import { linkIcon } from '@jupyterlab/ui-components';
+/*
+import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { PageConfig, URLExt } from '@jupyterlab/coreutils';
+import { toArray } from '@lumino/algorithm';
+import { Clipboard } from '@jupyterlab/apputils';
+
+const shareFile: JupyterFrontEndPlugin<void> = {
+  id: '@adyne/filebrowser-extension:share-file',
+  requires: [IFileBrowserFactory],
+  activate: activateGenLink,
+  autoStart: true
+};
+
+function activateGenLink(
+  app: JupyterFrontEnd,
+  factory: IFileBrowserFactory
+  ): void {
+  const { commands } = app;
+  const { tracker } = factory;
+  
+  console.log(`Gen Appmode Command has been activated.`);
+  const commandId = 'gen-appmode-link';
+  commands.addCommand(commandId, {
+    execute: (args: any) => {
+      const widget = tracker.currentWidget;
+      if (!widget) {
+        return;
+      }
+      const path = encodeURI(widget.selectedItems().next().path);
+      Clipboard.copyToSystem(URLExt.join(PageConfig.getTreeShareUrl(), path));
+      console.log(`this is the path...${path}`);
+      // Do something with path.
+      const orig = args['origin'];
+      console.log(`Gen Appmode Command has been called from ${orig}.`);
+      if (orig !== 'init') {
+        window.alert(`Gen Appmode ${orig}.`);
+      }
+    },
+    isVisible: () =>
+      tracker.currentWidget &&
+      toArray(tracker.currentWidget.selectedItems()).length === 1,
+    icon: linkIcon.bindprops({ stylesheet: 'menuItem' }),
+    label: 'Generate Appmode Link'
+  });
+  console.log(`Gen Appmode Command has been added.`);
+  const selectorNotDir = '.jp-DirListing-item[data-isdir="false"]';
+  app.contextMenu.addItem({
+     command: 'filebrowser:share-main',
+     selector: selectorNotDir,
+     rank: 10
+    });
+};
+
+export const plugins: JupyterFrontEndPlugin<any>[] = [shareFile]
+grl 
+const extension: JupyterFrontEndPlugin<void> = {
+  id: '@adyne/filebrowser-extension',
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    const { commands } = app;
+    const commandId = 'gen-appmode-link';
+    
+    commands.addCommand('gen-appmode-link', {
+      label: 'Generate Appmode Link',
+      caption: 'Generate Appmode Link',
+      icon: linkIcon.bindprops({ stylesheet: 'menuItem' }),
+      execute: (args: any) => {
+        const url = commands.execute('filebrowser:share-main');
+        const orig = args['origin'];
+        console.log(`Gen Appmode Command has been called from ${orig}.`);
+        if (orig !== 'init') {
+          window.alert(`Gen Appmode ${url}.`);
+        }
+      }
+    });
+    
+    const selectorNotDir = '.jp-DirListing-item[data-isdir="false"]';
+    app.contextMenu.addItem({
+       command: 'filebrowser:share-main',
+       selector: selectorNotDir,
+       rank: 16
+    });
+    // Call the command execution
+    commands.execute(commandId, { origin: 'init1' }).catch(reason => {
+      console.error(`error executing of jupyterlab:command.\n${reason}`);
+    });
+  }
+};
+
+export default extension;
+*/
+const shareFilePlugin: JupyterFrontEndPlugin<void> = {
+  id: '@adyne/filebrowser-extension',
+  autoStart: true,
+  activate: (app: JupyterFrontEnd) => {
+    const { commands } = app;
+    const commandId = 'filebrowser:share-main';
+    
+    commands.addCommand('filebrowser:share-main', {
+      label: 'Generate Appmode Link',
+      caption: 'Generate Appmode Link',
+      icon: linkIcon.bindprops({ stylesheet: 'menuItem' }),
+      execute: (args: any) => {
+        const url = commands.execute(commandId);
+        const orig = args['origin'];
+        console.log(`Gen Appmode Command has been called from ${orig}.`);
+        if (orig !== 'init') {
+          window.alert(`Gen Appmode ${url}.`);
+        }
+      }
+    });
+};
+
+const plugins: JupyterFrontEndPlugin<any>[] = [shareFilePlugin];
+export default plugins;
+
